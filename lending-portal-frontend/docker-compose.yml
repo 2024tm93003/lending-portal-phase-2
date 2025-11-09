@@ -1,0 +1,14 @@
+services:
+  lending-portal-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Copy a specific property file before building (must exist in the repo).
+        APP_CONFIG_FILE: ${APP_CONFIG_FILE:-public/config/app.properties}
+    image: lending-portal-frontend:latest
+    ports:
+      - "${FRONTEND_PORT:-4173}:80"
+    volumes:
+      # Keeps the app.properties file editable during local runs.
+      - ${APP_CONFIG_PATH:-./public/config/app.properties}:/usr/share/nginx/html/config/app.properties:ro

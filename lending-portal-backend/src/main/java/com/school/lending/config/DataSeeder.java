@@ -1,0 +1,37 @@
+package com.school.lending.config;
+
+import com.school.lending.model.Equipment;
+import com.school.lending.model.UserAccount;
+import com.school.lending.model.UserRole;
+import com.school.lending.repo.EquipmentRepository;
+import com.school.lending.repo.UserAccountRepository;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+@Component
+public class DataSeeder implements CommandLineRunner {
+
+    private final UserAccountRepository userRepository;
+    private final EquipmentRepository equipmentRepository;
+
+    public DataSeeder(UserAccountRepository userRepository, EquipmentRepository equipmentRepository) {
+        this.userRepository = userRepository;
+        this.equipmentRepository = equipmentRepository;
+    }
+
+    @Override
+    public void run(String... args) {
+        if (userRepository.count() == 0) {
+            userRepository.save(new UserAccount("ram", "ram@123", UserRole.STUDENT, "Sai Ram"));
+            userRepository.save(new UserAccount("suresh", "suresh@123", UserRole.STAFF, "Suresh Babu"));
+            userRepository.save(new UserAccount("prakash", "prakash@123", UserRole.ADMIN, "Prakash Raj"));
+        }
+
+        if (equipmentRepository.count() == 0) {
+            equipmentRepository.save(new Equipment("Canon EOS 80D", "Camera", "Needs strap replacement", 5, 5));
+            equipmentRepository.save(new Equipment("Basketball Kit", "Sports", "Used but intact", 20, 18));
+            equipmentRepository.save(new Equipment("Chemistry Lab Set", "Lab", "Glassware missing 2 test tubes", 10, 9));
+            equipmentRepository.save(new Equipment("Acoustic Guitar", "Music", "Strings replaced recently", 3, 3));
+        }
+    }
+}
