@@ -8,6 +8,13 @@ import com.school.lending.repo.UserAccountRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+/**
+ * Seeds initial data into the database on application startup.
+ *
+ * <p>This component inserts a few sample users and equipment items when the
+ * corresponding repositories are empty. It implements {@link CommandLineRunner}
+ * so seeding runs after the Spring context is initialized.
+ */
 @Component
 public class DataSeeder implements CommandLineRunner {
 
@@ -19,6 +26,12 @@ public class DataSeeder implements CommandLineRunner {
         this.equipmentRepository = equipmentRepository;
     }
 
+    @Override
+    /**
+     * Insert seed users and equipment when the repositories are empty.
+     *
+     * @param args startup arguments (ignored)
+     */
     @Override
     public void run(String... args) {
         if (userRepository.count() == 0) {

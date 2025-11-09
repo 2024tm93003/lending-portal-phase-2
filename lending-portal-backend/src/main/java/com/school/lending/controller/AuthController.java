@@ -15,6 +15,13 @@ import java.util.Optional;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    /**
+     * REST endpoints for authentication: login, signup and retrieving current user.
+     *
+     * <p>Uses {@link com.school.lending.service.AuthService} to authenticate
+     * users, create student users and issue tokens.
+     */
+
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -22,6 +29,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    /**
+     * Authenticate a user with username and password.
+     *
+     * @param payload login request containing username and password
+     * @return LoginResponse containing issued token and user info
+     * @throws org.springframework.web.server.ResponseStatusException with
+     *         HttpStatus.UNAUTHORIZED when credentials are invalid
+     */
     public LoginResponse login(@RequestBody LoginRequest payload) {
         Optional<UserAccount> user = authService.login(
                 payload == null ? null : payload.username,
@@ -41,6 +56,14 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
+    /**
+     * Create a new student account and return the resulting login response.
+     *
+     * @param request signup details (username, password, displayName)
+     * @return LoginResponse for the newly created user
+     * @throws org.springframework.web.server.ResponseStatusException with
+     *         HttpStatus.CONFLICT when username already exists
+     */
     public LoginResponse signup(@RequestBody SignupRequest request) {
         Optional<UserAccount> maybeUser = authService.createStudentUser(
                 request == null ? null : request.username,
@@ -57,6 +80,14 @@ public class AuthController {
     }
 
     @GetMapping("/me")
+    /**
+     * Return information about the currently authenticated user based on token.
+     *
+     * @param token the X-Auth-Token header value
+     * @return LoginResponse for the user represented by the token
+     * @throws org.springframework.web.server.ResponseStatusException with
+     *         HttpStatus.UNAUTHORIZED when token is missing or invalid
+     */
     public LoginResponse whoAmI(@RequestHeader(value = "X-Auth-Token", required = false) String token) {
         UserAccount found = authService.findUserByToken(token)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "invalid or missing token"));

@@ -14,6 +14,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class AuthService {
 
+    /**
+     * Lightweight authentication service used by controllers.
+     *
+     * <p>This service provides username/password checks, student user
+     * creation and an in-memory token issuance mechanism used for demo/test
+     * purposes. Tokens are stored in-process and are not persisted.
+     */
+
     private final UserAccountRepository userRepository;
     private final Map<String, Long> tokenBank = new ConcurrentHashMap<>();
     private final Map<Long, String> reverseLookup = new ConcurrentHashMap<>();
@@ -22,6 +30,14 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Authenticate a user by username and password. This method performs a
+     * simple equality check against the stored password.
+     *
+     * @param username username to authenticate
+     * @param password plaintext password to verify
+     * @return Optional containing the UserAccount on success, otherwise empty
+     */
     public Optional<UserAccount> login(String username, String password) {
         if (!StringUtils.hasText(username) || !StringUtils.hasText(password)) {
             return Optional.empty();
@@ -30,6 +46,14 @@ public class AuthService {
                 .filter(u -> password.equals(u.getPassword()));
     }
 
+    /**
+     * Create a new student user if the username is not already taken.
+     *
+     * @param username desired username
+     * @param password desired password
+     * @param nameTag  display name or null
+     * @return Optional containing the created UserAccount, or empty on conflict
+     */
     public Optional<UserAccount> createStudentUser(String username, String password, String nameTag) {
         if (userRepository.findByUsername(username).isPresent()) {
             return Optional.empty();
@@ -39,6 +63,12 @@ public class AuthService {
         return Optional.of(userRepository.save(fresh));
     }
 
+    /**
+     * Issue (or return existing) an in-memory token for the supplied account.
+     *
+     * @param acct the user account to issue a token for
+     * @return a token string, or null when acct is invalid
+     */
     public String issueToken(UserAccount acct) {
         if (acct == null || acct.getId() == null) {
             return null;
@@ -53,6 +83,12 @@ public class AuthService {
         return token;
     }
 
+    /**
+     * Resolve a user account from an issued token.
+     *
+     * @param token token previously issued by {@link #issueToken(UserAccount)}
+     * @return Optional containing the UserAccount if token is valid
+     */
     public Optional<UserAccount> findUserByToken(String token) {
         if (!StringUtils.hasText(token)) {
             return Optional.empty();
