@@ -9,7 +9,7 @@
  * @param {function(Object):void} onChange - Called with updated form state when a field changes.
  * @param {function(Event):void} onSubmit - Form submit handler.
  */
-const ManageEquipmentForm = ({ formState, onChange, onSubmit }) => {
+const ManageEquipmentForm = ({ formState, onChange, onSubmit, formErrors = {} }) => {
   /**
    * Create a change handler for a specific form field.
    * @param {string} field - Field to update.
@@ -26,10 +26,12 @@ const ManageEquipmentForm = ({ formState, onChange, onSubmit }) => {
         <div>
           <label className="block text-sm font-medium text-slate-700">Name</label>
           <input value={formState.itemName} onChange={updateField("itemName")} required className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+          {formErrors.itemName && <p className="text-xs text-red-600 mt-1">{formErrors.itemName}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-700">Category</label>
           <input value={formState.category} onChange={updateField("category")} required className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+          {formErrors.category && <p className="text-xs text-red-600 mt-1">{formErrors.category}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-700">Condition Notes</label>
@@ -39,10 +41,12 @@ const ManageEquipmentForm = ({ formState, onChange, onSubmit }) => {
           <div>
             <label className="block text-sm font-medium text-slate-700">Total Quantity</label>
             <input type="number" value={formState.totalQuantity} min="1" onChange={updateField("totalQuantity")} className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+            {formErrors.totalQuantity && <p className="text-xs text-red-600 mt-1">{formErrors.totalQuantity}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700">Available Now</label>
             <input value={formState.availableQuantity ?? ""} type="number" onChange={updateField("availableQuantity")} className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+            {formErrors.availableQuantity && <p className="text-xs text-red-600 mt-1">{formErrors.availableQuantity}</p>}
           </div>
         </div>
         <div>

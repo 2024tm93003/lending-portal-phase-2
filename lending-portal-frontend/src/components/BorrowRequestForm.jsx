@@ -13,7 +13,7 @@
  *
  * Returns JSX form elements.
  */
-const BorrowRequestForm = ({ items, formState, onChange, onSubmit }) => {
+const BorrowRequestForm = ({ items, formState, onChange, onSubmit, formErrors = {} }) => {
   /**
    * Create a change handler for a specific field.
    * @param {string} field - The form field name to update (e.g. 'startDate').
@@ -42,22 +42,26 @@ const BorrowRequestForm = ({ items, formState, onChange, onSubmit }) => {
               </option>
             ))}
           </select>
+          {formErrors.equipmentId && <p className="text-xs text-red-600 mt-1">{formErrors.equipmentId}</p>}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-medium text-slate-700">Start Date</label>
             <input type="date" value={formState.startDate} onChange={updateField("startDate")} required className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+            {formErrors.startDate && <p className="text-xs text-red-600 mt-1">{formErrors.startDate}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700">End Date</label>
             <input type="date" value={formState.endDate} onChange={updateField("endDate")} required className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+            {formErrors.endDate && <p className="text-xs text-red-600 mt-1">{formErrors.endDate}</p>}
           </div>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-slate-700">Quantity</label>
           <input type="number" min="1" value={formState.qty} onChange={updateField("qty")} className="mt-1 block w-28 rounded-md border-slate-200 px-3 py-2" />
+          {formErrors.qty && <p className="text-xs text-red-600 mt-1">{formErrors.qty}</p>}
         </div>
 
         <div>

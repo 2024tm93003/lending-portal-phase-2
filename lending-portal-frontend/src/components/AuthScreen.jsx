@@ -12,7 +12,7 @@
  * @param {function(Event):void} onSubmit - Submit handler for the form.
  * @param {string} [infoText] - Optional info/status text displayed below the form.
  */
-const AuthScreen = ({ mode, onModeChange, credentials, onCredentialsChange, onSubmit, infoText }) => {
+const AuthScreen = ({ mode, onModeChange, credentials, onCredentialsChange, onSubmit, infoText, fieldErrors = {} }) => {
   const isSignup = mode === "signup";
   /**
    * Update a specific credential field and notify parent.
@@ -59,22 +59,76 @@ const AuthScreen = ({ mode, onModeChange, credentials, onCredentialsChange, onSu
               required
               className="mt-1 block w-full rounded-md border-slate-200 shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
+            {fieldErrors.username && (
+              <p className="text-xs text-red-600 mt-1" role="alert">
+                {fieldErrors.username}
+              </p>
+            )}
           </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-700">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={credentials.password}
-              onChange={updateField("password")}
-              autoComplete={isSignup ? "new-password" : "current-password"}
-              required
-              className="mt-1 block w-full rounded-md border-slate-200 shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
-            />
-          </div>
+          {isSignup ? (
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={credentials.password}
+                  onChange={updateField("password")}
+                  autoComplete={isSignup ? "new-password" : "current-password"}
+                  required
+                  className="mt-1 block w-full rounded-md border-slate-200 shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+                {fieldErrors.password && (
+                  <p className="text-xs text-red-600 mt-1" role="alert">
+                    {fieldErrors.password}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex-1">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700">
+                  Re-enter Password
+                </label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  value={credentials.confirmPassword}
+                  onChange={updateField("confirmPassword")}
+                  autoComplete="new-password"
+                  required
+                  className="mt-1 block w-full rounded-md border-slate-200 shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+                {fieldErrors.confirmPassword && (
+                  <p className="text-xs text-red-600 mt-1" role="alert">
+                    {fieldErrors.confirmPassword}
+                  </p>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={credentials.password}
+                onChange={updateField("password")}
+                autoComplete={isSignup ? "new-password" : "current-password"}
+                required
+                className="mt-1 block w-full rounded-md border-slate-200 shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              />
+              {fieldErrors.password && (
+                <p className="text-xs text-red-600 mt-1" role="alert">
+                  {fieldErrors.password}
+                </p>
+              )}
+            </div>
+          )}
 
           {isSignup && (
             <div>
@@ -89,6 +143,11 @@ const AuthScreen = ({ mode, onModeChange, credentials, onCredentialsChange, onSu
                 required
                 className="mt-1 block w-full rounded-md border-slate-200 shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
+              {fieldErrors.displayName && (
+                <p className="text-xs text-red-600 mt-1" role="alert">
+                  {fieldErrors.displayName}
+                </p>
+              )}
             </div>
           )}
 

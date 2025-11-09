@@ -42,12 +42,15 @@ function PortalApp() {
   const [configError, setConfigError] = useState("");
   const [token, setToken] = useState(() => window.localStorage.getItem("lend_token") || "");
   const [user, setUser] = useState(null);
-  const [loginStuff, setLoginStuff] = useState({ username: "", password: "", displayName: "" });
+  const [loginStuff, setLoginStuff] = useState({ username: "", password: "", displayName: "", confirmPassword: "" });
   const [gearList, setGearList] = useState([]);
   const [reqs, setReqs] = useState([]);
   const [filterBucket, setFilterBucket] = useState({ category: "", availableOnly: false });
   const [borForm, setBorForm] = useState({ equipmentId: "", startDate: "", endDate: "", qty: 1 });
   const [equipForm, setEquipForm] = useState({ itemName: "", category: "", conditionNote: "", totalQuantity: 1 });
+  const [equipFormErrors, setEquipFormErrors] = useState({});
+  const [borFormErrors, setBorFormErrors] = useState({});
+  const [authErrors, setAuthErrors] = useState({});
   const [infoText, setInfoText] = useState("");
   const [inFlightRequests, setInFlightRequests] = useState(0);
   const trackedFetch = useCallback((...args) => {
@@ -153,9 +156,9 @@ function PortalApp() {
         if (!res.ok) throw new Error("Auth failed");
         return res.json();
       })
-      .then((data) => {
+        .then((data) => {
         setUser(data);
-        setLoginStuff({ username: "", password: "", displayName: "" });
+        setLoginStuff({ username: "", password: "", displayName: "", confirmPassword: "" });
       })
       .catch(() => {
         setToken("");
@@ -200,11 +203,41 @@ function PortalApp() {
 
   const handleLoginSubmit = (evt) => {
     evt.preventDefault();
+    // client-side validation
+    const errs = {};
+    const username = (loginStuff.username || "").trim();
+    const password = loginStuff.password || "";
+  if (!username) errs.username = "Username is required";
+    if (!password) errs.password = "Password is required";
+    if (authMode === "signup") {
+      // stricter password policy: min 8, at least one uppercase, one lowercase, one digit, one special char
+      const pwd = password || "";
+      const minLen = 8;
+      const hasUpper = /[A-Z]/.test(pwd);
+      const hasLower = /[a-z]/.test(pwd);
+      const hasDigit = /[0-9]/.test(pwd);
+      const hasSpecial = /[^A-Za-z0-9]/.test(pwd);
+      if (pwd.length < minLen) errs.password = errs.password || `Password must be at least ${minLen} characters`;
+      else if (!hasUpper || !hasLower || !hasDigit || !hasSpecial) {
+        errs.password = errs.password || "Password must include uppercase, lowercase, number, and special character";
+      }
+      if (!loginStuff.displayName || loginStuff.displayName.trim().length < 2) errs.displayName = "Display name is required";
+      if ((loginStuff.confirmPassword || "") !== pwd) errs.confirmPassword = "Passwords do not match";
+    }
+    if (Object.keys(errs).length) {
+      setAuthErrors(errs);
+      setInfoText("Please fix the highlighted fields");
+      return;
+    }
+    setAuthErrors({});
     const path = authMode === "signup" ? "signup" : "login";
+    const payload = authMode === "signup"
+      ? { username: loginStuff.username, password: loginStuff.password, displayName: loginStuff.displayName }
+      : { username: loginStuff.username, password: loginStuff.password };
     trackedFetch(`${apiRoot}/auth/${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loginStuff),
+      body: JSON.stringify(payload),
     })
       .then((res) => {
         if (!res.ok) return res.json().then((d) => Promise.reject(d));
@@ -239,9 +272,37 @@ function PortalApp() {
   const submitBorrow = (evt) => {
     evt.preventDefault();
     if (!apiRoot) return;
+    const errs = {};
+    const equipmentId = borForm.equipmentId;
+    const qty = Number(borForm.qty || 0);
+    const start = borForm.startDate;
+    const end = borForm.endDate;
+    if (!equipmentId) errs.equipmentId = "Please choose an item";
+    const selected = gearList.find((g) => String(g.id) === String(equipmentId));
+    if (!selected) errs.equipmentId = errs.equipmentId || "Selected item not found";
+    if (!Number.isFinite(qty) || !Number.isInteger(qty) || qty < 1) errs.qty = "Quantity must be an integer >= 1";
+    if (selected && Number.isFinite(qty) && qty > selected.availableQuantity) errs.qty = `Only ${selected.availableQuantity} available`;
+    if (!start) errs.startDate = "Start date is required";
+    if (!end) errs.endDate = "End date is required";
+    if (start && end) {
+      const s = new Date(start);
+      const e = new Date(end);
+      if (isNaN(s.getTime()) || isNaN(e.getTime())) {
+        errs.startDate = errs.startDate || "Invalid date";
+        errs.endDate = errs.endDate || "Invalid date";
+      } else if (s > e) {
+        errs.endDate = "End date must be the same or after start date";
+      }
+    }
+    if (Object.keys(errs).length) {
+      setBorFormErrors(errs);
+      setInfoText("Please fix the highlighted fields");
+      return;
+    }
+    setBorFormErrors({});
     const payload = { ...borForm, quantity: undefined };
-    payload.qty = Number(borForm.qty || 1);
-    payload.equipmentId = Number(borForm.equipmentId);
+    payload.qty = qty;
+    payload.equipmentId = Number(equipmentId);
     trackedFetch(`${apiRoot}/requests`, {
       method: "POST",
       headers: {
@@ -305,10 +366,27 @@ function PortalApp() {
   const createEquipment = (evt) => {
     evt.preventDefault();
     if (!apiRoot) return;
+    // client-side validation
+    const errs = {};
+    const name = (equipForm.itemName || "").trim();
+    const category = (equipForm.category || "").trim();
+    const total = Number(equipForm.totalQuantity || 0);
+    const available = equipForm.availableQuantity !== undefined && equipForm.availableQuantity !== null && String(equipForm.availableQuantity).trim() !== "" ? Number(equipForm.availableQuantity) : total;
+    if (!name) errs.itemName = "Name is required";
+    if (!category) errs.category = "Category is required";
+    if (!Number.isFinite(total) || !Number.isInteger(total) || total < 1) errs.totalQuantity = "Total must be an integer >= 1";
+    if (!Number.isFinite(available) || available < 0) errs.availableQuantity = "Available must be a number >= 0";
+    if (Number.isFinite(total) && Number.isFinite(available) && available > total) errs.availableQuantity = "Available cannot exceed total quantity";
+    if (Object.keys(errs).length) {
+      setEquipFormErrors(errs);
+      setInfoText("Please fix the highlighted fields");
+      return;
+    }
+    setEquipFormErrors({});
     const data = {
       ...equipForm,
-      totalQuantity: Number(equipForm.totalQuantity || 1),
-      availableQuantity: Number(equipForm.availableQuantity || equipForm.totalQuantity || 1),
+      totalQuantity: total,
+      availableQuantity: available,
     };
     trackedFetch(`${apiRoot}/equipment`, {
       method: "POST",
@@ -358,6 +436,7 @@ function PortalApp() {
           credentials={loginStuff}
           onCredentialsChange={setLoginStuff}
           onSubmit={handleLoginSubmit}
+          fieldErrors={authErrors}
           infoText={infoText}
         />
         {loadingIndicator}
@@ -388,13 +467,14 @@ function PortalApp() {
                   formState={borForm}
                   onChange={setBorForm}
                   onSubmit={submitBorrow}
+                  formErrors={borFormErrors}
                 />
               )}
             </>
           )}
           {view === "requests" && <RequestTable requests={reqs} role={user.role} onDecision={handleDecision} />}
           {view === "manage" && user.role === "ADMIN" && (
-            <ManageEquipmentForm formState={equipForm} onChange={setEquipForm} onSubmit={createEquipment} />
+            <ManageEquipmentForm formState={equipForm} onChange={setEquipForm} onSubmit={createEquipment} formErrors={equipFormErrors} />
           )}
         </main>
       </div>
