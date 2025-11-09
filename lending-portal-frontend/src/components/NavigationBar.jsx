@@ -10,22 +10,36 @@
  * @param {function():void} onLogout - Logout callback.
  */
 const NavigationBar = ({ view, onChange, role, onLogout }) => (
-  <div className="navbarish">
-    <button className={view === "dashboard" ? "" : "inactive"} onClick={() => onChange("dashboard")}>
+  <nav className="flex flex-wrap gap-3 mb-6">
+    <button
+      className={`px-4 py-2 rounded-md font-semibold ${view === "dashboard" ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-700"}`}
+      onClick={() => onChange("dashboard")}
+    >
       Equipment
     </button>
-    <button className={view === "requests" ? "" : "inactive"} onClick={() => onChange("requests")}>
+
+    <button
+      className={`px-4 py-2 rounded-md font-semibold ${view === "requests" ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-700"}`}
+      onClick={() => onChange("requests")}
+    >
       Borrow Requests
     </button>
+
     {role === "ADMIN" && (
-      <button className={view === "manage" ? "" : "inactive"} onClick={() => onChange("manage")}>
+      <button
+        className={`px-4 py-2 rounded-md font-semibold ${view === "manage" ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-700"}`}
+        onClick={() => onChange("manage")}
+      >
         Manage Equipment
       </button>
     )}
-    <button className="inactive" onClick={onLogout}>
-      Sign out
-    </button>
-  </div>
+
+    <div className="ml-auto">
+      <button className="px-3 py-2 rounded-md text-sm bg-white border border-slate-200 text-slate-700" onClick={onLogout}>
+        Sign out
+      </button>
+    </div>
+  </nav>
 );
 
 export default NavigationBar;

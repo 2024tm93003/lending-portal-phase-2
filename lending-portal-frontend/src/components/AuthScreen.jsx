@@ -24,54 +24,83 @@ const AuthScreen = ({ mode, onModeChange, credentials, onCredentialsChange, onSu
   };
 
   return (
-    <div className="authModal">
-      <div className="cardy authCardSimple">
-        <h2>{isSignup ? "Create an account" : "Welcome back"}</h2>
-        <p className="tiny">Use your school credentials to access the lending portal.</p>
+    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
+      <div className="bg-white shadow rounded-lg w-full max-w-md p-6">
+        <h2 className="text-2xl font-semibold mb-1">{isSignup ? "Create an account" : "Welcome back"}</h2>
+        <p className="text-sm text-slate-500 mb-4">Use your school credentials to access the lending portal.</p>
 
-        <div className="authTabs" role="tablist" aria-label="Authentication mode">
-          <button type="button" className={mode === "login" ? "active" : ""} onClick={() => onModeChange("login")}>
+        <div className="flex gap-2 mb-4" role="tablist" aria-label="Authentication mode">
+          <button
+            type="button"
+            className={`flex-1 py-2 rounded-md text-sm font-semibold ${mode === "login" ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-700"}`}
+            onClick={() => onModeChange("login")}
+          >
             Log In
           </button>
-          <button type="button" className={mode === "signup" ? "active" : ""} onClick={() => onModeChange("signup")}>
+          <button
+            type="button"
+            className={`flex-1 py-2 rounded-md text-sm font-semibold ${mode === "signup" ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-700"}`}
+            onClick={() => onModeChange("signup")}
+          >
             Quick Signup
           </button>
         </div>
 
-        <form className="authForm" onSubmit={onSubmit}>
-          <label htmlFor="username">Username</label>
-          <input id="username" value={credentials.username} onChange={updateField("username")} autoComplete="username" required />
+        <form className="space-y-3" onSubmit={onSubmit}>
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-slate-700">
+              Username
+            </label>
+            <input
+              id="username"
+              value={credentials.username}
+              onChange={updateField("username")}
+              autoComplete="username"
+              required
+              className="mt-1 block w-full rounded-md border-slate-200 shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
+            />
+          </div>
 
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            value={credentials.password}
-            onChange={updateField("password")}
-            autoComplete={isSignup ? "new-password" : "current-password"}
-            required
-          />
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={credentials.password}
+              onChange={updateField("password")}
+              autoComplete={isSignup ? "new-password" : "current-password"}
+              required
+              className="mt-1 block w-full rounded-md border-slate-200 shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
+            />
+          </div>
 
           {isSignup && (
-            <>
-              <label htmlFor="displayName">Display Name</label>
-                <input
-                  id="displayName"
-                  value={credentials.displayName}
-                  onChange={updateField("displayName")}
-                  autoComplete="name"
-                  required
-                />
-            </>
+            <div>
+              <label htmlFor="displayName" className="block text-sm font-medium text-slate-700">
+                Display Name
+              </label>
+              <input
+                id="displayName"
+                value={credentials.displayName}
+                onChange={updateField("displayName")}
+                autoComplete="name"
+                required
+                className="mt-1 block w-full rounded-md border-slate-200 shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              />
+            </div>
           )}
 
-          <button type="submit" className="btn btnPrimary btnFull">
-            {isSignup ? "Create account" : "Sign in"}
-          </button>
+          <div>
+            <button type="submit" className="w-full bg-sky-600 hover:bg-sky-700 text-white py-2 px-4 rounded-md font-semibold">
+              {isSignup ? "Create account" : "Sign in"}
+            </button>
+          </div>
         </form>
 
         {infoText && (
-          <p className="tiny" role="status">
+          <p className="text-sm text-slate-600 mt-3" role="status">
             {infoText}
           </p>
         )}

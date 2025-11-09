@@ -20,22 +20,34 @@ const ManageEquipmentForm = ({ formState, onChange, onSubmit }) => {
   };
 
   return (
-    <div className="cardy">
-      <h2>Add equipment</h2>
-      <form onSubmit={onSubmit}>
-        <label>Name</label>
-        <input value={formState.itemName} onChange={updateField("itemName")} required />
-        <label>Category</label>
-        <input value={formState.category} onChange={updateField("category")} required />
-        <label>Condition Notes</label>
-        <textarea rows={3} value={formState.conditionNote} onChange={updateField("conditionNote")} />
-        <label>Total Quantity</label>
-        <input type="number" value={formState.totalQuantity} min="1" onChange={updateField("totalQuantity")} />
-        <label>Available Now</label>
-        <input value={formState.availableQuantity ?? ""} type="number" onChange={updateField("availableQuantity")} />
-        <button type="submit" className="btn btnPrimary btnFull">
-          Save Item
-        </button>
+    <div className="bg-white shadow rounded-lg p-6">
+      <h2 className="text-xl font-semibold">Add equipment</h2>
+      <form onSubmit={onSubmit} className="mt-4 space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-slate-700">Name</label>
+          <input value={formState.itemName} onChange={updateField("itemName")} required className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700">Category</label>
+          <input value={formState.category} onChange={updateField("category")} required className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700">Condition Notes</label>
+          <textarea rows={3} value={formState.conditionNote} onChange={updateField("conditionNote")} className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Total Quantity</label>
+            <input type="number" value={formState.totalQuantity} min="1" onChange={updateField("totalQuantity")} className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Available Now</label>
+            <input value={formState.availableQuantity ?? ""} type="number" onChange={updateField("availableQuantity")} className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+          </div>
+        </div>
+        <div>
+          <button type="submit" className="w-full bg-sky-600 hover:bg-sky-700 text-white py-2 rounded-md font-semibold">Save Item</button>
+        </div>
       </form>
     </div>
   );

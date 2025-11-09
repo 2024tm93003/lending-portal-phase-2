@@ -24,27 +24,47 @@ const BorrowRequestForm = ({ items, formState, onChange, onSubmit }) => {
   };
 
   return (
-    <div className="cardy">
-      <h2>Borrow something</h2>
-      <form onSubmit={onSubmit}>
-        <label>Select item</label>
-        <select value={formState.equipmentId} onChange={updateField("equipmentId")} required>
-          <option value="">-- Choose --</option>
-          {items.map((equip) => (
-            <option key={equip.id} value={equip.id}>
-              {equip.itemName} ({equip.availableQuantity} free)
-            </option>
-          ))}
-        </select>
-        <label>Start Date</label>
-        <input type="date" value={formState.startDate} onChange={updateField("startDate")} required />
-        <label>End Date</label>
-        <input type="date" value={formState.endDate} onChange={updateField("endDate")} required />
-        <label>Quantity</label>
-        <input type="number" min="1" value={formState.qty} onChange={updateField("qty")} />
-        <button type="submit" className="btn btnPrimary btnFull">
-          Submit Request
-        </button>
+    <div className="bg-white shadow rounded-lg p-6 mt-6">
+      <h2 className="text-xl font-semibold mb-3">Borrow something</h2>
+      <form onSubmit={onSubmit} className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-slate-700">Select item</label>
+          <select
+            value={formState.equipmentId}
+            onChange={updateField("equipmentId")}
+            required
+            className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2 focus:ring-2 focus:ring-sky-500"
+          >
+            <option value="">-- Choose --</option>
+            {items.map((equip) => (
+              <option key={equip.id} value={equip.id}>
+                {equip.itemName} ({equip.availableQuantity} free)
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Start Date</label>
+            <input type="date" value={formState.startDate} onChange={updateField("startDate")} required className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700">End Date</label>
+            <input type="date" value={formState.endDate} onChange={updateField("endDate")} required className="mt-1 block w-full rounded-md border-slate-200 px-3 py-2" />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700">Quantity</label>
+          <input type="number" min="1" value={formState.qty} onChange={updateField("qty")} className="mt-1 block w-28 rounded-md border-slate-200 px-3 py-2" />
+        </div>
+
+        <div>
+          <button type="submit" className="w-full bg-sky-600 hover:bg-sky-700 text-white py-2 rounded-md font-semibold">
+            Submit Request
+          </button>
+        </div>
       </form>
     </div>
   );

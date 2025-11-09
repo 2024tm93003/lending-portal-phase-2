@@ -338,10 +338,10 @@ function PortalApp() {
     const title = configLoaded ? "Configuration issue" : "Loading configuration";
     return (
       <>
-        <div className="appShell">
-          <div className="cardy">
-            <h2>{title}</h2>
-            <p className="tiny">{message}</p>
+        <div className="max-w-5xl mx-auto p-6">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold">{title}</h2>
+            <p className="text-sm text-slate-600">{message}</p>
           </div>
         </div>
         {loadingIndicator}
@@ -369,32 +369,34 @@ function PortalApp() {
 
   return (
     <>
-      <div className="appShell">
-        <header>
-          <h1>Equipment Lending Portal</h1>
-          <p className="tiny">
-            Signed in as {user.displayName} ({user.role})
-          </p>
+      <div className="max-w-5xl mx-auto p-6">
+        <header className="mb-6">
+          <h1 className="text-3xl font-bold">Equipment Lending Portal</h1>
+          <p className="text-sm text-slate-600 mt-1">Signed in as <span className="font-medium">{user.displayName}</span> <span className="text-slate-400">({user.role})</span></p>
         </header>
+
         <NavigationBar view={view} onChange={handleViewChange} role={user.role} onLogout={logout} />
-        {infoText && <p className="tiny">{infoText}</p>}
-        {view === "dashboard" && (
-          <>
-            <EquipmentCatalog items={gearList} filters={filterBucket} onFiltersChange={setFilterBucket} />
-            {canSubmitBorrow && (
-              <BorrowRequestForm
-                items={sanitizedGearForBorrow}
-                formState={borForm}
-                onChange={setBorForm}
-                onSubmit={submitBorrow}
-              />
-            )}
-          </>
-        )}
-        {view === "requests" && <RequestTable requests={reqs} role={user.role} onDecision={handleDecision} />}
-        {view === "manage" && user.role === "ADMIN" && (
-          <ManageEquipmentForm formState={equipForm} onChange={setEquipForm} onSubmit={createEquipment} />
-        )}
+        {infoText && <p className="text-sm text-slate-600">{infoText}</p>}
+
+        <main className="space-y-6 mt-4">
+          {view === "dashboard" && (
+            <>
+              <EquipmentCatalog items={gearList} filters={filterBucket} onFiltersChange={setFilterBucket} />
+              {canSubmitBorrow && (
+                <BorrowRequestForm
+                  items={sanitizedGearForBorrow}
+                  formState={borForm}
+                  onChange={setBorForm}
+                  onSubmit={submitBorrow}
+                />
+              )}
+            </>
+          )}
+          {view === "requests" && <RequestTable requests={reqs} role={user.role} onDecision={handleDecision} />}
+          {view === "manage" && user.role === "ADMIN" && (
+            <ManageEquipmentForm formState={equipForm} onChange={setEquipForm} onSubmit={createEquipment} />
+          )}
+        </main>
       </div>
       {loadingIndicator}
     </>
