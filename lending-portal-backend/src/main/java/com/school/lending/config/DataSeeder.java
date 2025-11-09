@@ -29,7 +29,6 @@ public class DataSeeder implements CommandLineRunner {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
     /**
      * Insert seed users and equipment when the repositories are empty.
      *
