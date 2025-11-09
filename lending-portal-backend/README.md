@@ -37,3 +37,13 @@ Services:
 - Admin: `prakash / prakash@123`
 
 Sample equipment inventory is preloaded on startup.
+
+## API docs / Swagger UI
+
+If you run the backend locally (or via Docker) the OpenAPI/Swagger UI is available at:
+
+- Swagger UI: http://localhost:8080/swagger-ui.html (or /swagger-ui/index.html)
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+
+The UI lists all endpoints and allows trying requests directly from your browser.
+

@@ -5,11 +5,13 @@ import com.school.lending.model.UserRole;
 import com.school.lending.repo.UserAccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import com.school.lending.security.JwtUtil;
 
 @Service
 public class AuthService {
@@ -25,9 +27,13 @@ public class AuthService {
     private final UserAccountRepository userRepository;
     private final Map<String, Long> tokenBank = new ConcurrentHashMap<>();
     private final Map<Long, String> reverseLookup = new ConcurrentHashMap<>();
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public AuthService(UserAccountRepository userRepository) {
+    public AuthService(UserAccountRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     /**
@@ -42,8 +48,8 @@ public class AuthService {
         if (!StringUtils.hasText(username) || !StringUtils.hasText(password)) {
             return Optional.empty();
         }
-        return userRepository.findByUsername(username)
-                .filter(u -> password.equals(u.getPassword()));
+    return userRepository.findByUsername(username)
+        .filter(u -> passwordEncoder.matches(password, u.getPassword()));
     }
 
     /**
@@ -58,8 +64,10 @@ public class AuthService {
         if (userRepository.findByUsername(username).isPresent()) {
             return Optional.empty();
         }
-        UserAccount fresh = new UserAccount(username, password, UserRole.STUDENT,
-                StringUtils.hasText(nameTag) ? nameTag : username);
+    // store passwords securely using BCrypt
+    String encoded = passwordEncoder.encode(password == null ? "" : password);
+    UserAccount fresh = new UserAccount(username, encoded, UserRole.STUDENT,
+        StringUtils.hasText(nameTag) ? nameTag : username);
         return Optional.of(userRepository.save(fresh));
     }
 
@@ -73,14 +81,8 @@ public class AuthService {
         if (acct == null || acct.getId() == null) {
             return null;
         }
-        String existing = reverseLookup.get(acct.getId());
-        if (existing != null) {
-            return existing;
-        }
-        String token = UUID.randomUUID().toString().replace("-", "");
-        tokenBank.put(token, acct.getId());
-        reverseLookup.put(acct.getId(), token);
-        return token;
+        // generate signed JWT
+        return jwtUtil.generateToken(acct);
     }
 
     /**
@@ -93,10 +95,11 @@ public class AuthService {
         if (!StringUtils.hasText(token)) {
             return Optional.empty();
         }
-        Long userId = tokenBank.get(token);
-        if (userId == null) {
+        // Validate and parse JWT token
+        if (!jwtUtil.validateToken(token)) {
             return Optional.empty();
         }
-        return userRepository.findById(userId);
+        String username = jwtUtil.getUsername(token);
+        return userRepository.findByUsername(username);
     }
 }

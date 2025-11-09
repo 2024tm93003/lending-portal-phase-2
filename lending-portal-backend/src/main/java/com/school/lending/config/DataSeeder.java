@@ -5,6 +5,7 @@ import com.school.lending.model.UserAccount;
 import com.school.lending.model.UserRole;
 import com.school.lending.repo.EquipmentRepository;
 import com.school.lending.repo.UserAccountRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +21,12 @@ public class DataSeeder implements CommandLineRunner {
 
     private final UserAccountRepository userRepository;
     private final EquipmentRepository equipmentRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DataSeeder(UserAccountRepository userRepository, EquipmentRepository equipmentRepository) {
+    public DataSeeder(UserAccountRepository userRepository, EquipmentRepository equipmentRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.equipmentRepository = equipmentRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -35,9 +38,9 @@ public class DataSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (userRepository.count() == 0) {
-            userRepository.save(new UserAccount("ram", "ram@123", UserRole.STUDENT, "Sai Ram"));
-            userRepository.save(new UserAccount("suresh", "suresh@123", UserRole.STAFF, "Suresh Babu"));
-            userRepository.save(new UserAccount("prakash", "prakash@123", UserRole.ADMIN, "Prakash Raj"));
+            userRepository.save(new UserAccount("ram", passwordEncoder.encode("ram@123"), UserRole.STUDENT, "Sai Ram"));
+            userRepository.save(new UserAccount("suresh", passwordEncoder.encode("suresh@123"), UserRole.STAFF, "Suresh Babu"));
+            userRepository.save(new UserAccount("prakash", passwordEncoder.encode("prakash@123"), UserRole.ADMIN, "Prakash Raj"));
         }
 
         if (equipmentRepository.count() == 0) {
