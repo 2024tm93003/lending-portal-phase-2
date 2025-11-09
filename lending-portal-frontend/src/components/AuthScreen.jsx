@@ -1,5 +1,24 @@
+/**
+ * AuthScreen
+ *
+ * Renders the authentication UI used for login and quick signup flows.
+ * Controlled via `credentials` and `onCredentialsChange`.
+ *
+ * Props:
+ * @param {('login'|'signup')} mode - Which form mode to render.
+ * @param {function(string):void} onModeChange - Called when the user switches between modes.
+ * @param {Object} credentials - Current credential values: { username, password, displayName }.
+ * @param {function(Object):void} onCredentialsChange - Called with updated credentials when any field changes.
+ * @param {function(Event):void} onSubmit - Submit handler for the form.
+ * @param {string} [infoText] - Optional info/status text displayed below the form.
+ */
 const AuthScreen = ({ mode, onModeChange, credentials, onCredentialsChange, onSubmit, infoText }) => {
   const isSignup = mode === "signup";
+  /**
+   * Update a specific credential field and notify parent.
+   * @param {string} field - Field name to update (e.g. 'username').
+   * @returns {function(Event):void}
+   */
   const updateField = (field) => (event) => {
     onCredentialsChange({ ...credentials, [field]: event.target.value });
   };

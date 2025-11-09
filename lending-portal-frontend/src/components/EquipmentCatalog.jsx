@@ -1,4 +1,18 @@
+/**
+ * EquipmentCatalog
+ *
+ * Displays a list/grid of equipment tiles and provides simple filtering controls.
+ *
+ * Props:
+ * @param {Array<Object>} items - Array of equipment objects to render. Each item should include { id, itemName, category, conditionNote, availableQuantity, totalQuantity }.
+ * @param {Object} filters - Current filter values: { category, availableOnly }.
+ * @param {function(Object):void} onFiltersChange - Called with updated filters when user changes any filter control.
+ */
 const EquipmentCatalog = ({ items, filters, onFiltersChange }) => {
+  /**
+   * Merge and emit filter changes.
+   * @param {Object} changes - Partial filter properties to merge into current filters.
+   */
   const updateFilters = (changes) => {
     onFiltersChange({ ...filters, ...changes });
   };

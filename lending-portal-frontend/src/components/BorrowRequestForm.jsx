@@ -1,4 +1,24 @@
+/**
+ * BorrowRequestForm
+ *
+ * A controlled form component used to submit a borrow request for equipment.
+ * This component is presentation-focused and delegates state updates and
+ * submission handling to the parent via the `onChange` and `onSubmit` props.
+ *
+ * Props:
+ * @param {Array<Object>} items - Array of equipment objects to choose from. Each item should include { id, itemName, availableQuantity }.
+ * @param {Object} formState - Current form values: { equipmentId, startDate, endDate, qty }.
+ * @param {function(Object):void} onChange - Handler called with the new form state when any field changes.
+ * @param {function(Event):void} onSubmit - Form submit handler.
+ *
+ * Returns JSX form elements.
+ */
 const BorrowRequestForm = ({ items, formState, onChange, onSubmit }) => {
+  /**
+   * Create a change handler for a specific field.
+   * @param {string} field - The form field name to update (e.g. 'startDate').
+   * @returns {function(Event):void} - Event handler which calls `onChange` with updated state.
+   */
   const updateField = (field) => (event) => {
     onChange({ ...formState, [field]: event.target.value });
   };

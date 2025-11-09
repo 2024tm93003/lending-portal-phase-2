@@ -1,4 +1,15 @@
+/**
+ * RequestTable
+ *
+ * Displays a table of borrow requests. Actions available depend on the `role` prop.
+ *
+ * Props:
+ * @param {Array<Object>} requests - Array of request objects to render. Each request should have { id, gear, requester, startDate, endDate, qty, status }.
+ * @param {string} role - Current user's role (e.g. 'USER', 'STAFF', 'ADMIN'). Manager roles see action buttons.
+ * @param {function(number, string, string=):void} onDecision - Callback invoked when an action is taken. Signature: (requestId, action, [reason]).
+ */
 const RequestTable = ({ requests, role, onDecision }) => {
+  // Determine whether the current user should see managerial actions
   const isManager = role === "STAFF" || role === "ADMIN";
   const emptyColSpan = isManager ? 7 : 6;
 
